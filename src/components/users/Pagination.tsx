@@ -49,47 +49,52 @@ export default function Pagination({
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 mt-8">
+        <div className="flex items-center justify-center gap-1 sm:gap-2">
+            {/* Previous button */}
             <button
                 onClick={onPrevious}
                 disabled={!hasPrevious}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium
-                         disabled:opacity-50 disabled:cursor-not-allowed
-                         hover:bg-gray-50 transition-colors"
+                className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-gray-900
+                         disabled:opacity-40 disabled:cursor-not-allowed
+                         transition-colors"
             >
-                Trước
+                <span className="hidden sm:inline">‹ Trước</span>
+                <span className="sm:hidden">‹</span>
             </button>
 
+            {/* Page numbers */}
             <div className="flex gap-1">
                 {getPageNumbers().map((page, index) => (
                     typeof page === 'number' ? (
                         <button
                             key={index}
                             onClick={() => onPageChange(page)}
-                            className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors
+                            className={`w-8 h-8 sm:w-9 sm:h-9 text-xs sm:text-sm font-medium rounded-lg transition-all
                                 ${page === currentPage
-                                    ? 'bg-blue-600 text-white'
-                                    : 'border border-gray-300 hover:bg-gray-50'
+                                    ? 'bg-primary-600 text-white shadow-sm'
+                                    : 'text-gray-700 hover:bg-gray-100'
                                 }`}
                         >
                             {page}
                         </button>
                     ) : (
-                        <span key={index} className="w-10 h-10 flex items-center justify-center text-gray-400">
+                        <span key={index} className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-gray-400 text-xs sm:text-sm">
                             {page}
                         </span>
                     )
                 ))}
             </div>
 
+            {/* Next button */}
             <button
                 onClick={onNext}
                 disabled={!hasNext}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium
-                         disabled:opacity-50 disabled:cursor-not-allowed
-                         hover:bg-gray-50 transition-colors"
+                className="px-2 sm:px-3 py-1.5 text-xs sm:text-sm text-gray-600 hover:text-gray-900
+                         disabled:opacity-40 disabled:cursor-not-allowed
+                         transition-colors"
             >
-                Sau
+                <span className="hidden sm:inline">Sau ›</span>
+                <span className="sm:hidden">›</span>
             </button>
         </div>
     );
