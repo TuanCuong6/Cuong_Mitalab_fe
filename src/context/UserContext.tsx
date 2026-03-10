@@ -17,10 +17,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
     const [hasPrevious, setHasPrevious] = useState(false);
     const [hasNext, setHasNext] = useState(false);
 
-    const fetchUsers = async (page: number = pageNumber) => {
+    // Separate loading state for pagination (không ảnh hưởng header)
+    const [paginationLoading, setPaginationLoading] = useState(false);
+
+    const fetchUsers = async (page: number = pageNumber, showPaginationLoading = false) => {
         try {
-            setLoading(true);
+            if (showPaginationLoading) {
+                setPaginationLoading(true);
+            } else {
+                setLoading(true);
+            }
             setError(null);
+            
             const data = await userService.getPaged(page, pageSize);
             setUsers(data.items);
             setTotalPages(data.totalPages);
@@ -32,37 +40,38 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setError(err instanceof Error ? err.message : 'Có lỗi xảy ra');
         } finally {
             setLoading(false);
+            setPaginationLoading(false);
         }
     };
 
     const goToPage = async (page: number) => {
-        if (page >= 1 && page <= totalPages) {
-            await fetchUsers(page);
+        if (page >= 1 && page <= totalPages && page !== pageNumber) {
+            await fetchUsers(page, true); // Chỉ show pagination loading
         }
     };
 
     const nextPage = async () => {
         if (hasNext) {
-            await fetchUsers(pageNumber + 1);
+            await fetchUsers(pageNumber + 1, true);
         }
     };
 
     const previousPage = async () => {
         if (hasPrevious) {
-            await fetchUsers(pageNumber - 1);
+            await fetchUsers(pageNumber - 1, true);
         }
     };
 
     useEffect(() => {
-        fetchUsers(1);
+        fetchUsers(1, false); // Initial load - show full loading
     }, []);
 
     return (
         <UserContext.Provider value={{ 
             users, 
-            loading, 
+            loading: paginationLoading || loading, // Combine both loading states
             error, 
-            refreshUsers: () => fetchUsers(pageNumber),
+            refreshUsers: () => fetchUsers(pageNumber, false),
             pageNumber,
             pageSize,
             totalPages,
